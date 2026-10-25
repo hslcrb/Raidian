@@ -1,0 +1,3 @@
+[submodule "assets/fonts/vendor"]
+	path = assets/fonts/vendor
+	url = https://github.com/fonts-archive/ChosunGu.git
