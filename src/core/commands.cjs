@@ -20,7 +20,7 @@ function agentGuide(){return {
   actions:ACTIONS,
 };}
 function which(command) {try{return execFileSync(process.platform==='win32'?'where':'which',[command],{encoding:'utf8',timeout:3000}).trim().split(/\r?\n/)[0]}catch{return null}}
-function doctor(){return {version:pkg.version,node:process.version,platform:process.platform,git:which('git'),gh:which('gh'),electron:Boolean(process.versions.electron),font:'assets/fonts/ChosunGu.TTF'};}
+function doctor(){return {version:pkg.version,node:process.version,platform:process.platform,git:which('git'),gh:which('gh'),electron:Boolean(process.versions.electron),font:'assets/fonts/ChosunGu.woff2'};}
 function checkAction(action) { if(!Object.hasOwn(ACTIONS,action))throw new GitError(`지원하지 않는 작업: ${action}`); }
 async function dispatch(action,args={},context={}){
   checkAction(action);
