@@ -139,8 +139,15 @@ class Workbench:
         header.pack(fill="x")
         logo = tk.Canvas(header, width=45, height=45, bg=BURGUNDY, bd=0, highlightthickness=0)
         logo.pack(side="left", padx=(0, 13))
-        logo.create_oval(1, 1, 44, 44, fill=RED, outline="")
-        logo.create_text(22, 22, text="R", fill="white", font=(self.font, 23, "bold"))
+        # Ruby mascot uses only native Canvas primitives: no image dependency.
+        logo.create_rectangle(2, 2, 44, 44, fill=BLUSH, outline="")
+        logo.create_line(17, 11, 17, 32, 30, 37, fill=RED, width=3.5, capstyle=tk.ROUND, smooth=True)
+        logo.create_line(17, 23, 26, 18, 30, 10, fill=RED, width=3.5, capstyle=tk.ROUND, smooth=True)
+        for x, y in ((17, 11), (30, 10), (30, 37)):
+            logo.create_oval(x - 4, y - 4, x + 4, y + 4, fill=RED_HOVER, outline=PAPER)
+        logo.create_oval(20, 22, 23, 25, fill=BURGUNDY, outline="")
+        logo.create_oval(27, 22, 30, 25, fill=BURGUNDY, outline="")
+        logo.create_arc(22, 24, 29, 30, start=180, extent=170, style=tk.ARC, outline=BURGUNDY, width=1.5)
         title = tk.Frame(header, bg=BURGUNDY)
         title.pack(side="left")
         tk.Label(title, text="Raidian", fg=PAPER, bg=BURGUNDY,
