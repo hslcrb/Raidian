@@ -18,6 +18,14 @@ if (-not (Get-Command 'git' -ErrorAction SilentlyContinue)) {
     throw 'Git for Windows가 필요합니다 (테스트 및 사용 시).' 
 }
 $version = '0.1.0'
+# Bind every generated executable to the exact source commit it was built from.
+$sourceCommit = (& git rev-parse HEAD).Trim()
+if ($LASTEXITCODE -ne 0 -or $sourceCommit -notmatch '^[0-9a-fA-F]{40}$') {
+    throw 'Git 커밋 SHA를 식별할 수 없습니다. git clone으로 시작하세요.'
+}
+if ((& git status --porcelain --untracked-files=no)) {
+    throw '추적 중인 소스에 미커밋 변경이 있습니다. 커밋/병합 후 빌드하세요.'
+}
 $launcher = if ($Builder -eq 'Nuitka-MingGW') { '-3.12' } else { '-3' }
 $venvName = if ($Builder -eq 'Nuitka-MingGW') { '.venv-raidian-mingw' } else { '.venv-raidian-pyi' }
 & py $launcher -m venv $venvName
@@ -73,6 +81,17 @@ if (Test-Path $portable) { Remove-Item -Recurse -Force $portable }
 New-Item -ItemType Directory -Path $portable | Out-Null
 Copy-Item $guiExe,$cliExe,(Join-Path $root 'LICENSE') -Destination $portable
 Copy-Item (Join-Path $root 'scripts\README-PORTABLE.txt') -Destination $portable
+$buildInfo = [ordered]@{
+    version = "v$version"
+    sourceCommit = $sourceCommit
+    builder = $Builder
+    platform = 'windows-amd64'
+    pythonVersion = (& $python --version)
+    builtAtUtc = [DateTime]::UtcNow.ToString('o')
+}
+$buildInfoPath = Join-Path $root 'dist\BUILD-INFO.json'
+$buildInfo | ConvertTo-Json | Set-Content -LiteralPath $buildInfoPath -Encoding UTF8
+Copy-Item $buildInfoPath -Destination $portable
 $zip = Join-Path $root "dist\Raidian-v$version-windows-x64-portable.zip"
 if (Test-Path $zip) { Remove-Item $zip -Force }
 Compress-Archive -Path (Join-Path $portable '*') -DestinationPath $zip -CompressionLevel Optimal
@@ -83,10 +102,13 @@ $hashes = @($guiExe,$cliExe,$zip) | ForEach-Object {
 }
 $checksums = Join-Path $root 'dist\SHA256SUMS.txt'
 $hashes | Set-Content -LiteralPath $checksums -Encoding ASCII
+& $python -m scripts.validate_release --directory dist --tag "v$version" --source-commit $sourceCommit
+if ($LASTEXITCODE -ne 0) { throw '포터블 파일 출처/체크섬 검증 실패' }
 Write-Host "`n✔ Windows build prepared (not uploaded):"
 Write-Host $guiExe
 Write-Host $cliExe
 Write-Host $zip
 Write-Host $checksums
+Write-Host $buildInfoPath
 Write-Host '테스트할 것: Windows 실제 GUI 실행, 한글 경로, Git Credential Manager, MCP JSON-RPC.'
-Write-Host '릴리스 게시: powershell -File scripts/publish_release.ps1 (별도 승인/로그인 필요)'
+Write-Host '릴리스 게시: powershell -File scripts/publish_release.ps1 -WindowsQaPassed (Windows 실기기 검증 후 수동 게시)'
