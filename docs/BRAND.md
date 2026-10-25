@@ -1,47 +1,20 @@
-# Raidian brand book · 버건디 한 방울, 명료함 한 스푼 ♥
+# 🎀 Raidian · 마음은 부드럽게, Git은 명확하게
 
-## Idea
+- **브랜드:** Raidian / 레이디안
+- **마스코트:** Ruby / 루비. Git 브랜치의 갈라지는 선이 웃는 얼굴처럼 보이도록 만든 작은 친구.
+- **미션:** Git Bash의 예측 가능성을 심플하고 읽기 쉬운 인터페이스로 옮깁니다.
+- **UI 원칙:** 시선이 가장 많이 가는 주요 작업은 1–2개만 강조, 위험 작업은 확인, 에이전트에도 이해 가능한 이름과 의미.
 
-**Raidian / 레이디안** is a small, helpful workbench for Git—not a full IDE. The UI communicates what will happen *before* it changes history. Feeling: **soft but deliberate**, cheerful without hiding risks.
+| 색 이름 | HEX | 사용 |
+|---|---|---|
+| Burgundy | `#551128` | 브랜드/헤더 |
+| Cherry Red | `#A72146` | 주요 액션 |
+| Rose | `#C42B54` | 호버·선택 |
+| Blush | `#FCECEF` | 보조 패널 |
+| Paper | `#FFFFFF` | 읽기 영역 |
 
-## Character
+**서체:** 사용자가 제공한 조선굴림체 `ChosunGu.TTF`, 없으면 맑은 고딕/Apple SD Gothic Neo/Noto Sans CJK KR 등. 폰트 저작권은 (주)조선일보사에 있으며 MIT 적용 대상이 아닙니다. [폰트 조건](../assets/fonts/README.md)
 
-**Ruby · 루비** is a smiling branch graph. Each node is a commit, the junction is a feature branch, and the blush stands for a calm workflow. Ruby never decorates irreversible operations with reassuring false promises.
+구성 요소: 높이 42px 이상의 Pill 버튼, 16–24px 라운드 카드, 모바일 폭에서 1열로 재배치되는 작업 표, `aria-live` 상태 피드백, 의미 있는 고정 라벨과 구조화된 제목, `prefers-reduced-motion` 존중.
 
-- Banner: [`assets/brand/raidian-hero.svg`](../assets/brand/raidian-hero.svg), wide with accessible `<title>` and `<desc>`.
-- Symbol: [`assets/brand/raidian-mark.svg`](../assets/brand/raidian-mark.svg), square mark for small spaces.
-- Windows ICO: generated from [`scripts/make_icon.py`](../scripts/make_icon.py) with Pillow at build time.
-
-## Design tokens
-
-| Token | Value | Use |
-| --- | --- | --- |
-| Burgundy | `#551128` | Primary brand surface, dark titles |
-| Crimson | `#A72146` | Primary button, commit and push |
-| Rosy | `#C42B54` | Hover, attention |
-| Blush | `#FCECEF` | Card accent, button secondary |
-| Paper | `#FFFFFF` | Content canvas |
-| Warm Canvas | `#F8F5F5` | App backdrop |
-| Dark Ink | `#302329` | Body text |
-| Muted Ink | `#776B70` | Secondary text |
-
-Do not use color alone to represent a Git action. Show its name (`커밋`, `푸시`, `병합`) visibly. Keep red action colors distinct from errors: errors should also explain what happened in text.
-
-## Typography and fonts
-
-Font stack in GUI: Wanted Sans → Pretendard → Malgun Gothic/맑은 고딕 → Noto Sans CJK KR → platform alternatives. Only fonts that are licensed for embedding and redistribution may be packaged. **The requested attached font was not available to the session that assembled these sources, so no original font data has been embedded.** The font loader searches `assets/fonts/*.ttf` and registers these privately on Windows; font family detection depends on the font's internal metadata.
-
-See [`assets/README.md`](../assets/README.md). There is no bundled proprietary font binary in source or binary outputs by default.
-
-## Shape and motion
-
-- Primary CTAs are pill-ish and visibly keyboard focusable, with rounded corners.
-- Secondary controls use warm blush with clear text labels.
-- Cards are clean rectangles with comfortable padding; keep content density low.
-- Prefer no animation to avoid distracting agents or users.
-- Responsive UI turns side-by-side tables into vertical tables at narrower widths.
-- Provide keyboard shortcuts and explicit confirmation on merges and reverts.
-
-## Contribution rules
-
-Every brand asset must remain editable SVG or reproducibly generated code, contain accessible metadata, be tracked in Git, and respect upstream licenses. Avoid font CDN dependencies in the desktop UI; this app should work offline.
+기존 SVG 로고·루비를 재사용합니다: `assets/brand/raidian-hero.svg` / `raidian-mark.svg`.

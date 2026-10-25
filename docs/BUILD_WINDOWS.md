@@ -1,82 +1,54 @@
-# Windows portable EXE build guide
+# 🪟 Windows 포터블 Electron 빌드
 
-## Important reality check
+## 1. 요구 환경
 
-**MinGW-w64 is a cross-compiler for C/C++, not a general converter of a Linux Python/Tkinter program into a Windows self-contained binary.** PyInstaller builds for the operating system where its Python runs. For Windows GUI packaging, Python, Tcl/Tk and loader modules must be Windows-compatible. A practical path is **native Windows**; a more advanced alternative is **Wine + Windows CPython + Windows PyInstaller**, which still requires Windows runtimes and full functional testing on Windows.
+Windows 10/11 x64, Node.js 22 이상, Git for Windows, 네트워크(NPM/Electron 배포 파일 다운로드)가 필요합니다. Linux에서 Cross-build는 electron-builder와 Wine 등 추가 의존성이 필요하므로 **Windows에서 직접 빌드하는 것이 기본**입니다. 이제 Electron이므로 MinGW/PyInstaller/Python은 필요 없습니다.
 
-The repository's default builder is **PyInstaller on Windows**. A second Windows-only option uses **Nuitka with MinGW64**, as requested. It compiles Python on Windows using the supported MinGW toolchain; it does **not** claim unsupported Linux→Windows Nuitka cross-compilation.
+> 주의: Windows용 `Raidian.exe`가 실제로 생성되지 않았으면 EXE가 있다고 표기하지 않습니다. CI를 활성화하지 않았습니다.
 
-| Option | Runs on | Compiler/bundler | Status |
-| --- | --- | --- | --- |
-| `-Builder PyInstaller` | Windows | Windows CPython + PyInstaller | Script provided; Windows run not verified here |
-| `-Builder Nuitka-MingGW` | Windows + Python 3.12 | Nuitka + MinGW64 | Script provided; Windows run not verified here |
-| Linux-only `mingw-w64` | Linux | Windows-targeting C/C++ compiler | Insufficient alone for this Python GUI |
-| Wine + Windows CPython | Linux with Wine configured | Windows PyInstaller in Wine | Not packaged as a validated workflow |
-
-References: [PyInstaller manual](https://pyinstaller.org/en/stable/), [Nuitka user manual](https://nuitka.net/user-documentation/user-manual.html).
-
-## Prerequisites on a trusted Windows 10/11 x64 machine
-
-1. Install Windows Python from python.org. For `-Builder Nuitka-MingGW`, install **Python 3.12 x64** and `py` launcher; Python 3.13+ requires a Nuitka experimental MinGW mode.
-2. Install Git for Windows so `git --version` succeeds in PowerShell.
-3. To publish, optionally install GitHub CLI, sign in (`gh auth login`) and ensure push access to `hslcrb/Raidian`.
-4. Ensure network access for pip and (for Nuitka) the MinGW compiler download. Antivirus or policy may intercept build output.
-5. Ensure there is free disk space for 2 onefile builds and an isolated Python venv.
-
-## Build
+## 2. 소스와 폰트
 
 ```powershell
-# In a checkout of Raidian on Windows:
-powershell -ExecutionPolicy Bypass -File .\scripts\build_windows.ps1
-
-# Or Nuitka, backed by MinGW64, on Python 3.12:
-powershell -ExecutionPolicy Bypass -File .\scripts\build_windows.ps1 -Builder Nuitka-MingGW
+git clone --recurse-submodules https://github.com/hslcrb/Raidian.git
+cd Raidian
+# 원본 ChosunGu.TTF를 assets/fonts/ChosunGu.TTF에 배치하거나
+# npm run font:install 로 원본 동일 SHA를 검증하여 자동 다운로드
+Get-Item .\assets\fonts\ChosunGu.TTF
 ```
 
-Script does: create an isolated environment; install its pinned-major tools; run unit tests; compile Python; generate an icon; build GUI and console; validate PE x64 headers; smoke-test CLI/doctor/agent-guide; write a Git SHA-linked BUILD-INFO.json; zip binaries with README and LICENSE; generate SHA256SUMS; verify the archive, binaries and source provenance.
+폰트 원형 및 권리를 확인하세요: [assets/fonts/README.md](../assets/fonts/README.md).
 
-Expected outputs **only after a successful build**:
-
-```
-dist/
-  Raidian.exe                       # GUI, no console
-  Raidian-CLI.exe                   # CLI + MCP (subcommand: mcp)
-  Raidian-v0.1.0-windows-x64-portable.zip
-  SHA256SUMS.txt
-  BUILD-INFO.json                   # verified source Git SHA and build tool
-```
-
-The optional embedded fonts must be placed in `assets/fonts/` with an appropriate redistribution license before compiling; without them Windows system fonts are used. Source SVG icons do not require proprietary typefaces.
-
-## Post-build verification on **actual Windows**, required for release
-
-1. PowerShell: `Get-FileHash dist\Raidian.exe -Algorithm SHA256` and compare the generated checksums.
-2. `dist\Raidian-CLI.exe --version`, `--json doctor`, and `--json agent-guide` must print valid output.
-3. Create a temporary Git repo in a folder containing Hangul and spaces. In GUI, edit a Hangul-named file and confirm commit, history and status.
-4. Test keyboard-only usage, focus indication, visible error text, narrow window layout.
-5. Test two named remotes and `gh` PR listing if installed; do not test with production credentials by default.
-6. Test default no-ff merge and no history rewrite on disposable branches.
-7. Confirm MCP JSON-RPC line-delimited stdout is machine-readable, does not print prompts to stdout, and the default mode refuses writes.
-8. Check `git.exe` is actually present on target Windows, either in PATH or via user installation. Python bundle alone does not include Git.
-9. Check `.zip` contains BOTH EXEs, `LICENSE`, `README-PORTABLE.txt` and `BUILD-INFO.json`. The ZIP itself is **not** a signed installer.
-10. Check `python -m scripts.validate_release --directory dist --tag v0.1.0 --source-commit (git rev-parse HEAD)` passes (PowerShell). This checks manifest, SHA-256 of individual EXEs and ZIP, Windows AMD64 PE headers, ZIP member hashes and exact source revision. It **does not prove actual execution**.
-
-**DO NOT claim the release is validated merely because `MZ`/`PE` headers are present.** `verify_pe.py` only checks format and x64 CPU type; GUI and Git must be tested on Windows before publication.
-
-## Publishing
+## 3. 자동 빌드
 
 ```powershell
-powershell -File .\scripts\publish_release.ps1 -Tag v0.1.0 -Prerelease -WindowsQaPassed
+powershell -ExecutionPolicy Bypass -File .\scripts\build-windows.ps1
 ```
 
-The publish script is never invoked automatically. It requires an authenticated `gh`, an explicit `-WindowsQaPassed` declaration **after real Windows manual tests**, the five verified release artifacts (both EXEs, ZIP, checksum manifest, BUILD-INFO.json), and the same clean `main` SHA used at build time. It never overwrites an existing release. See [RELEASING.md](RELEASING.md). Existing same-name release assets are **not** overwritten automatically.
+스크립트는 npm 설치, 테스트, `electron-builder --win portable zip --x64`, PE+ZIP 무결성 검사를 차례로 실행합니다.
 
-## Troubleshooting
+성공 시:
 
-- `py` absent: use python.org installation with **Python launcher for Windows** checked.
-- Nuitka `--mingw64` fails on Python 3.13+: use CPython 3.12; do not silently use experimental flags for release.
-- Tk plugin missing in Nuitka: verify the builder version and `--enable-plugin=tk-inter` support.
-- PyInstaller missing Tcl/Tk: make sure you use an official Windows Python installer and rerun clean.
-- Antivirus warning: unsigned onefile programs commonly trigger reputation warnings. Verify SHA256, consider code signing, and do not instruct users to disable antivirus.
-- `git` not found after EXE starts: Git for Windows is external and should be installed separately.
-- Failure on Linux: the Windows script intentionally refuses Linux; don't rename an ELF file to `.exe`.
+- `dist/Raidian-0.2.0-win-x64-portable.exe`
+- `dist/Raidian-0.2.0-win-x64.zip`
+- `dist/SHA256SUMS.txt`
+- `dist/BUILD-INFO.json` (Git SHA, 버전, 플랫폼, 검사 시각)
+
+포터블 EXE는 Electron·Node 런타임을 포함하지만 Git과 선택적 gh는 별도 설치해야 해요.
+
+## 4. Windows 수동 QA
+
+- [ ] EXE를 Windows에서 실행해 한글 폴더/경로와 조선굴림체 확인
+- [ ] 파일 상태, 한국어 자동 커밋, 브랜치 전환, no-ff 병합·충돌 처리
+- [ ] cherry-pick, revert, 원격 2개, GitHub PR 연동
+- [ ] `Raidian-...exe --cli --repo . --json doctor` 콘솔 출력 검사
+- [ ] `Raidian-...exe --mcp --repo .`에 JSON-RPC 한 줄 전달 후 응답 검사
+- [ ] ZIP 압축 해제 뒤 EXE 직접 실행
+- [ ] Defender/SmartScreen 경고와 미서명 상태 확인 (코드 서명 미설정)
+
+## 5. 릴리스
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\publish-release.ps1 -WindowsQaPassed
+```
+
+`gh release create`를 사용하며, 대상 브랜치가 `main`인지, `BUILD-INFO.json`의 Git SHA가 현재 HEAD와 일치하는지, 이미 릴리스가 존재하는지 검사합니다. 먼저 실제 Windows QA를 완료해야 합니다.

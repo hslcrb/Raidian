@@ -1,43 +1,14 @@
-# Manual release playbook
+# 🚀 릴리스 매뉴얼
 
-Raidian intentionally keeps GitHub Actions **fully commented out**. Publishing is an explicit, manual maintainer operation, never a side effect of a commit. No credentials, font binaries or hidden build artifacts belong in Git.
+1. `main`에 PR이 merge commit(no-ff)으로 병합됐는지 확인.
+2. Windows x64에서 Node/Git/gh 준비, `assets/fonts/ChosunGu.TTF` 원본 배치.
+3. `npm install`, `npm test`, `npm run build:win`, `npm run verify:win` 통과.
+4. Windows에서 폰트·한글·브랜치·병합·CLI·MCP 실사용 QA.
+5. `scripts/publish-release.ps1 -WindowsQaPassed` 실행.
+6. `gh release view v0.2.0 --json assets,tagName,url`로 실제 자산 업로드 확인.
 
-## Release gates
+**자산:** Windows x64 포터블 EXE, ZIP, SHA256SUMS.txt, BUILD-INFO.json. 빌드 도구 설정으로 실행 파일이 자동 생성되는 것과 GitHub Release로 업로드되었다는 것은 다른 단계입니다.
 
-- [ ] All intended PRs merged into `main` with merge commits (GitHub merge method `merge`; not squash/rebase).
-- [ ] Unit tests and compile checks passing on source tree.
-- [ ] Windows portable ZIP built with Windows Python using `scripts/build_windows.ps1`.
-- [ ] TWO Windows AMD64 PE executables tested (`Raidian.exe`, `Raidian-CLI.exe`).
-- [ ] GUI manually opened on **real Windows** and text including Hangul verified.
-- [ ] CLI/MCP smoke tests and read-only/confirmation behaviors validated.
-- [ ] Included fonts independently checked for embedding/redistribution permission.
-- [ ] `BUILD-INFO.json` records exact reviewed `main` SHA and Windows build tool.
-- [ ] `python -m scripts.validate_release` passes (both EXEs, ZIP, SHA256SUMS, source SHA).
-- [ ] SHA256SUMS matches all artifacts and is included in release assets.
-- [ ] LICENSE and README-PORTABLE.txt included in ZIP.
-- [ ] Release notes reviewed for accuracy; experimental features/limitations disclosed.
-- [ ] Tag points at the reviewed `main` commit.
+**무결성:** 릴리스 소스 커밋 SHA가 `BUILD-INFO.json`과 맞지 않으면 발행하지 않습니다. 미서명 Windows 프로그램은 운영체제 경고가 나타날 수 있으니 README에서 안내합니다. 자동 Actions 워크플로는 모든 줄을 주석 처리하여 실행되지 않게 유지합니다.
 
-## Publishing from trusted Windows PowerShell
-
-```powershell
-git switch main
-git pull --ff-only origin main
-powershell -ExecutionPolicy Bypass -File scripts/build_windows.ps1
-powershell -ExecutionPolicy Bypass -File scripts/publish_release.ps1 -Tag v0.1.0 -Prerelease -WindowsQaPassed
-```
-
-The publisher checks auth, clean `main` status, Git SHA provenance, ZIP, x64 PE headers, the checksum values and an explicit `-WindowsQaPassed` human attestation. It uses `gh release create` with `--target <exact built SHA>` and **refuses an existing release** to prevent silent overwrite. It uploads both EXEs, the portable ZIP, checksum manifest and build metadata. `-WindowsQaPassed` is a maintainer assertion, **not automatic proof** that GUI QA happened. Verify on <https://github.com/hslcrb/Raidian/releases>.
-
-## Supported public statements
-
-- Source tests passed on Linux → "소스 테스트 통과".
-- `verify_pe.py` passed → "PE x64 파일 형식 확인".
-- Windows GUI manual QA passed → "Windows GUI 기본 동작 확인".
-- GitHub Release API/CLI reports uploaded asset → "GitHub Release 게시 완료".
-
-**Do not conflate these gates.** The 2026-10-25 work environment did not contain Windows Python, MinGW or Wine; its Windows host was offline. The GitHub app toolset exposed in that session could merge PRs and manage Git text content, but did not expose release creation/asset upload. Hence a source/docs update is not proof of an uploaded `.exe` release.
-
-## Hotfixes
-
-Create `chatgpt-extrahigh/fix/<topic>` from `main`, make atomic commits with English prefix and Korean body, push each commit, open PR, and merge using no-ff. Review security/privacy before publishing another version. Do not force-push tags or replace already-published assets without clear release notes and deliberate approval.
+실제 릴리스가 없으면 릴리스 페이지를 빈 상태로 표기하고, 다운로드를 안내하지 마세요.

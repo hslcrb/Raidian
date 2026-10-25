@@ -1,0 +1,14 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict');const fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const {parse,tokenize,execute}=require('../src/core/cli.cjs');const {Repository}=require('../src/core/git.cjs');const {dispatch,doctor,agentGuide,ACTIONS,MUTATIONS}=require('../src/core/commands.cjs');
+test('CLI JSON status 플래그',()=>{const x=parse(['--repo','한글 프로젝트','--json','status']);assert.equal(x.repo,'한글 프로젝트');assert.equal(x.action,'status');assert.equal(x.json,true)});
+test('CLI 빈 메시지 커밋',()=>{const x=parse(['commit']);assert.equal(x.args.message,undefined);assert.equal(x.args.confirm,false)});
+test('CLI -m 메시지 인코딩',()=>{const x=parse(['commit','-m','docs: 반짝 수정']);assert.equal(x.args.message,'docs: 반짝 수정')});
+test('CLI nested 브랜치와 base',()=>{const x=parse(['branch-child','feature','intro','--from','main']);assert.equal(x.args.base,'main');assert.equal(x.args.detail,'intro')});
+test('CLI --yes 강제 확인',()=>{const x=parse(['revert','01234567','--yes']);assert.equal(x.args.confirm,true)});
+test('CLI 불명확한 플래그 거부',()=>{assert.throws(()=>parse(['status','--exec']),/알 수 없는/)});
+test('CLI 대화형 파서 공백·한글',()=>{assert.deepEqual(tokenize('commit -m "docs: 한글 알림"'),['commit','-m','docs: 한글 알림'])});
+test('CLI doctor 정보',()=>{assert.ok(doctor().node);assert.ok(agentGuide().interfaces.mcp)});
+test('허용된 명령 등록 확인',()=>{assert.ok(Object.hasOwn(ACTIONS,'gh-pr-create'));assert.ok(MUTATIONS.has('commit'))});
+test('CLI Git 실제 JSON 조회',async()=>{const dir=fs.mkdtempSync(path.join(os.tmpdir(),'raidian-cli-'));try{await Repository.init(dir);const r=await execute(['--repo',dir,'--json','status'],{print:false});assert.equal(r.ok,true);assert.equal(r.data.branch,'main')}finally{fs.rmSync(dir,{recursive:true,force:true})}});
+test('명령 등록되지 않은 shell 실행 거부',async()=>{await assert.rejects(()=>dispatch('shell-exec',{code:'rm -rf /'}),/지원하지/)});
