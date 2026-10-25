@@ -25,8 +25,10 @@
     "build:win": "electron-builder --win portable zip --x64 --publish never",
     "build:linux": "electron-builder --linux AppImage --x64 --publish never",
     "verify:win": "node scripts/verify-windows.mjs",
-    "font:install": "node scripts/install-font.mjs",
-    "prebuild:win": "node scripts/install-font.mjs"
+    "prebuild:win": "node scripts/font-assets.mjs",
+    "font:verify": "node scripts/font-assets.mjs",
+    "font:restore": "node scripts/font-assets.mjs --restore",
+    "prebuild:linux": "node scripts/font-assets.mjs"
   },
   "devDependencies": {
     "electron": "45.0.0",
@@ -44,7 +46,7 @@
       "src/**/*",
       "bin/**/*",
       "assets/brand/**/*",
-      "assets/fonts/ChosunGu.TTF",
+      "assets/fonts/ChosunGu.woff2",
       "package.json",
       "LICENSE",
       "assets/fonts/README.md"
