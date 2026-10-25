@@ -8,3 +8,7 @@ test('한국어 폰트 CSS · 대체 글꼴',()=>{const s=read('src/renderer/sty
 test('마스코트 자산 및 문서 존재',()=>{for(const f of ['assets/brand/raidian-hero.svg','assets/brand/raidian-mark.svg','README.md','LICENSE','assets/fonts/README.md'])assert.ok(fs.existsSync(path.join(root,f)),f)});
 test('GitHub Actions 전체 주석 처리',()=>{for(const line of read('.github/workflows/windows-build.yml').split(/\r?\n/)){assert.ok(!line.trim()||line.trim().startsWith('#'))}});
 test('릴리스 PE 검증 함수가 잘못된 헤더를 거부',async()=>{const {checkExe}=await import('../scripts/verify-windows.mjs');assert.throws(()=>checkExe(Buffer.alloc(1024)),/PE/);const b=Buffer.alloc(2048);b.write('MZ');b.writeUInt32LE(128,0x3c);b.write('PE\0\0',128);b.writeUInt16LE(0x8664,132);assert.doesNotThrow(()=>checkExe(b))});
+
+test('폰트 자동 설치는 고정 원본 blob SHA 검증',async()=>{const {gitBlobSha,expectedGitSha}=await import('../scripts/install-font.mjs');assert.equal(expectedGitSha,'953386f09aee424a7e8e8cb08ea4c44733bdedcb');assert.notEqual(gitBlobSha(Buffer.from('다른 폰트')),expectedGitSha)});
+
+test('Git submodule은 원본 배포처를 고정 참조',()=>{const s=read('.gitmodules');assert.match(s,/fonts-archive\/ChosunGu/);const pkg=JSON.parse(read('package.json'));assert.ok(pkg.build.files.includes('assets/fonts/ChosunGu.TTF'))});

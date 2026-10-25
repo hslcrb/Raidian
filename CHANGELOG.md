@@ -7,7 +7,7 @@
 - feat: no-ff 병합, 자동 한국어 커밋, 계층형 브랜치, 복수 원격, PR 연동 유지
 - feat: 사용자 제공 조선굴림체를 CSS 우선 폰트로 사용하도록 지원
 - security: 비활성화한 Node renderer, 허용 목록 IPC/MCP, 확인 절차
-- test: 한글·Git 이력·MCP·정적 접근성 48개 테스트
+- test: 한글·Git 이력·MCP·정적 접근성 50개 테스트
 - build: Windows portable/zip electron-builder 설정 및 무결성 검증, 수동 게시 스크립트
 - docs: README·AGENTS·BUILD·BRAND·USER_GUIDE·RELEASING 전면 갱신
 

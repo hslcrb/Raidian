@@ -3,10 +3,10 @@
 ## 이번 작업에서 로컬로 확인
 
 - Node.js v22.16.0, Git 2.47.3 사용.
-- `npm test`: **48개 단위·통합 테스트 통과** (UTF-8 한글 경로, NUL 파일명, 자동 커밋, no-ff 실제 Git 병합, cherry-pick/revert, 복수 원격, CLI 파싱, MCP 권한, 접근성 마크업, PE 헤더 검증).
+- `npm test`: **50개 단위·통합 테스트 통과** (UTF-8 한글 경로, NUL 파일명, 자동 커밋, no-ff 실제 Git 병합, cherry-pick/revert, 복수 원격, CLI 파싱, MCP 권한, 접근성 마크업, PE 헤더 검증).
 - `npm run check`: Node 내장 구문 검사 통과.
 - `npm run test:smoke`: Electron 파일 구조 스모크 통과.
-- 첨부된 `ChosunGu.TTF` 원본의 family name 확인 및 로컬 CSS 폰트 경로 설정.
+- 첨부된 `ChosunGu.TTF` 원본의 family name·SHA 확인, 공개 GitHub 미러의 동일 blob SHA 검증, 로컬 CSS 폰트 경로 설정.
 
 ## 이 환경에서 수행하지 못한 항목
 

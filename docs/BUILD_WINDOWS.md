@@ -9,9 +9,10 @@ Windows 10/11 x64, Node.js 22 이상, Git for Windows, 네트워크(NPM/Electron
 ## 2. 소스와 폰트
 
 ```powershell
-git clone https://github.com/hslcrb/Raidian.git
+git clone --recurse-submodules https://github.com/hslcrb/Raidian.git
 cd Raidian
-# 원본 ChosunGu.TTF를 assets/fonts/ChosunGu.TTF에 배치
+# 원본 ChosunGu.TTF를 assets/fonts/ChosunGu.TTF에 배치하거나
+# npm run font:install 로 원본 동일 SHA를 검증하여 자동 다운로드
 Get-Item .\assets\fonts\ChosunGu.TTF
 ```
 

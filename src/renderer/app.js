@@ -71,6 +71,7 @@
  bind('copy-sha',async()=>{if(state.selected){const copied=await window.raidian.copy(state.selected);status(copied?'커밋 SHA를 복사했어요.':'복사할 수 없어요.',copied?'info':'error')}});
  $('commit-form').addEventListener('submit',e=>{e.preventDefault();void commit(false)});bind('commit-push',()=>commit(true));
  document.addEventListener('keydown',e=>{
+  if ($('action-dialog').open) return;
   const key=e.key.toLowerCase();if(e.key==='F5'){e.preventDefault();void load()}
   if((e.ctrlKey||e.metaKey)&&key==='o'){e.preventDefault();void choose()}
   if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();void commit(e.shiftKey)}
