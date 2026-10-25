@@ -49,3 +49,13 @@
 - README와 SVG에는 외부 사용자 추적 코드를 넣지 않음.
 - 워크플로 전체 주석 처리 상태 유지.
 - 향후 실제 Windows 테스트에서 발생한 오류 및 포터블 용량을 이 문서에 추가할 것.
+
+
+## 6. 추가 검증 · 릴리스 무결성 강화
+
+- `tests/test_release_validation.py`: **합성된 PE 파일**을 대상으로 정상 출처, 체크섬 위·변조, ZIP 파일 누락, SHA 불일치, 태그 형식 오류를 테스트합니다. **실제 Windows EXE 테스트가 아닙니다.**
+- `tests/test_ui.py`: Git 백그라운드 작업 도중 저장소 경로 변경 방지를 가상 디스플레이에서 테스트합니다.
+- 테스트는 총 **25건 통과** (`xvfb-run` GUI 포함). 화면 없는 환경에서는 GUI 테스트 1건이 건너뛰어집니다.
+- 빌드 스크립트가 `BUILD-INFO.json`과 개별 Windows EXE/ZIP SHA-256 목록을 만들고, `scripts.validate_release`가 이를 교차 검증하도록 강화했습니다.
+- 게시 스크립트는 `-WindowsQaPassed` 스위치가 없으면 멈추고, `BUILD-INFO.json` SHA가 현재 `main`과 같을 때만 진행하며, 기존 릴리스를 덮어쓰지 않습니다.
+- **잔여 한계:** 2026-10-25 환경에는 Wine, Windows CPython, MinGW 툴체인, GitHub Release 자산 게시 도구가 없었습니다. 따라서 실제 Windows 바이너리 컴파일/실행/Release 업로드는 **미실시**입니다.
