@@ -121,7 +121,11 @@ powershell -ExecutionPolicy Bypass -File .\scripts\build_windows.ps1 -Builder Nu
 
 압축을 풀고 `Raidian.exe`를 실행하면 GUI가 열려요. `Raidian-CLI.exe --json doctor`는 콘솔 진단, `Raidian-CLI.exe mcp --repo "C:\work\repo"`는 MCP 서버예요. **Git은 필수 외부 의존성**이고, `gh`는 선택 외부 의존성이에요. 즉 Python 설치는 필요 없지만 Git은 따로 설치되어야 해요.
 
-> ⚠️ **빌드 상태**: 본 저장소에는 Windows 빌드 스크립트가 있으며, **Windows용 EXE 실행 검증 및 GitHub Release 바이너리 게시 여부는 릴리스 페이지에서 별도로 확인**해야 해요. MinGW만으로 Linux의 PyInstaller를 Windows EXE로 바꿀 수 없어요. Windows Python/런타임이 필요한 이유는 [빌드 가이드](docs/BUILD_WINDOWS.md)에 정리했어요.
+> ⚠️ **빌드 상태**: 본 저장소에는 Windows 빌드 스크립트가 있으며, **Windows용 EXE 실행 검증 및 **현재 GitHub Release가 아직 없으며 Windows EXE도 아직 배포되지 않았어요.** 실제 빌드·테스트·게시 완료 여부는 릴리스 페이지에서 확인**해야 해요. MinGW만으로 Linux의 PyInstaller를 Windows EXE로 바꿀 수 없어요. Windows Python/런타임이 필요한 이유는 [빌드 가이드](docs/BUILD_WINDOWS.md)에 정리했어요.
+
+🍪 **루비의 배포 약속:** “EXE가 만들어졌다는 말은, 정말 Windows에서 열어보고 나서 할게요.”
+
+빌드에 `BUILD-INFO.json`(소스 커밋), 개별 실행 파일과 ZIP의 SHA-256, 자동 무결성 검사를 연결했어요. 발행은 Windows 수동 QA를 확인한 후에만 해요.
 
 📦 [최신 Releases 페이지](https://github.com/hslcrb/Raidian/releases) · [빌드/검증 방법](docs/BUILD_WINDOWS.md) · [릴리스 절차](docs/RELEASING.md)
 
