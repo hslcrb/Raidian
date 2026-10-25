@@ -1,61 +1,22 @@
-# Raidian 검증 기록 · 2026-10-25
+# ✅ 검증 및 제한 사항 — Electron 전환 (2026-10-25)
 
-> 기능 구현·테스트 결과와 **실제 Windows 실행 파일 검증**을 구별해서 기록합니다. GitHub README에 보이는 것과 실제 릴리스 바이너리 상태가 다르면 이 문서가 사실을 명확히 합니다.
+## 이번 작업에서 로컬로 확인
 
-## 1. 작업 범위 및 코드 상태
+- Node.js v22.16.0, Git 2.47.3 사용.
+- `npm test`: **48개 단위·통합 테스트 통과** (UTF-8 한글 경로, NUL 파일명, 자동 커밋, no-ff 실제 Git 병합, cherry-pick/revert, 복수 원격, CLI 파싱, MCP 권한, 접근성 마크업, PE 헤더 검증).
+- `npm run check`: Node 내장 구문 검사 통과.
+- `npm run test:smoke`: Electron 파일 구조 스모크 통과.
+- 첨부된 `ChosunGu.TTF` 원본의 family name 확인 및 로컬 CSS 폰트 경로 설정.
 
-- 기존 PR [#1](https://github.com/hslcrb/Raidian/pull/1): 19개 파일별 커밋, Tkinter GUI·Git 엔진·CLI·MCP 구현, merge commit `d6a5c6107ac2e7a800ade3855ac6d5c65bb02832`.
-- 문서·브랜드·빌드 PR [#2](https://github.com/hslcrb/Raidian/pull/2): 24개 파일별 커밋, 귀여운 루비 SVG, 포터블 빌드 스크립트 및 운영 문서, merge commit `5d9e10bb67e711073cc47d1697f421449ad85d18`.
-- 두 PR 모두 GitHub의 `merge` 병합 방식 사용. 커밋/푸시는 GitHub 저장소 작업 브랜치에 파일별로 즉시 반영했습니다.
-- 작업 브랜치 네임스페이스: `chatgpt-extrahigh/`.
+## 이 환경에서 수행하지 못한 항목
 
-## 2. 로컬 검증 (실행됨)
+- Electron 런타임 패키지 설치(인터넷/DNS 접근 불가).
+- 실제 Electron GUI 프로세스 구동 및 스크린리더 QA.
+- Windows x64 포터블 EXE·ZIP 빌드(Windows PC 오프라인, Electron 바이너리 미설치).
+- GitHub Release 생성/실제 바이너리 업로드(연결된 GitHub 도구에 Release POST 및 Asset Upload 기능이 없음).
 
-| 테스트 | 결과 | 의미 |
-| --- | --- | --- |
-| `python -m unittest discover -s tests -v` | **19건 통과** | 임시 Git 저장소, 한글 경로, 메시지 자동 선택, no-ff, cherry-pick, revert, 다중 원격, CLI/MCP |
-| `python -m compileall -q raidian scripts` | **통과** | Python 문법/임포트 가능한 소스 컴파일 확인 |
-| `xvfb-run` Tkinter Workbench 생성 | **통과** | 1100×760 가로 배치, 720×640 세로 배치, 메인 브랜치 표시 |
-| SVG XML 파싱 / CairoSVG 미리보기 | **통과** | SVG 문법 유효, 브랜드 헤더/심볼 렌더링 |
-| `.github/workflows` 활성 YAML 점검 | **통과** | 워크플로 파일의 모든 비어있지 않은 줄이 `#` 주석 |
-| Windows PE 헤더 검사기 합성 fixture | **통과** | x64 시뮬레이션 MZ/PE 메타데이터 파싱 **만** 확인 |
-| 실제 Windows EXE 빌드 및 기동 | **미실행** | Windows Python·Wine·MinGW 부재, Windows 기기 오프라인 |
-| GitHub Release 등록·자산 업로드 | **미실행** | 연결된 GitHub 도구는 PR 병합은 지원하지만 Release 생성/업로드 미지원 |
+## 실패하면 배포 중단
 
-위 결과는 Linux Debian 13 / CPython 3.13 / Git 2.47 계열의 작업 환경에서 얻은 것입니다. Windows PE 테스트는 **실제 실행 파일 생성 테스트가 아닙니다**.
+`scripts/verify-windows.mjs`는 `dist/`의 portable EXE가 `MZ` + AMD64 PE, ZIP이 PK 헤더인지 확인하며, 해시와 빌드 커밋 기록을 작성합니다. Windows 수동 실행 QA가 완료되지 않은 상태에서는 publish 스크립트 실행을 금지합니다.
 
-## 3. 새 아키텍처
-
-- 공통 Git 엔진: UTF-8 우선 및 CP949 fallback, 명령 인자 배열, `shell=False`, 안전한 작업 트리 검사.
-- GUI: Tkinter 표/입력/버튼, 버건디 테마, 루비 마스코트, 너비에 따라 배치 전환, 명령 작업자 스레드.
-- CLI: JSON 출력 및 대화형 프롬프트.
-- MCP: 2025-11-25까지의 레거시 handshake와 2026-07-28 stateless discovery 지원. read-only 기본/쓰기 opt-in.
-- Windows: `build_windows.ps1`가 **Windows 머신에서만** PyInstaller 또는 Nuitka/MinGW 빌드를 실행하도록 준비됨.
-- 릴리스: 명시적 `publish_release.ps1`가 `gh` CLI를 통해 ZIP/체크섬을 게시하도록 준비됨. **이 스크립트는 이 환경에서 실행되지 않음**.
-
-## 4. 차단 요소와 다음 확인
-
-1. 신뢰할 수 있는 Windows 10/11 x64 개발 머신에서 Python 3.12 x64, Git for Windows 설치.
-2. `powershell -ExecutionPolicy Bypass -File scripts/build_windows.ps1 -Builder Nuitka-MingGW` 또는 기본 PyInstaller 명령 실행.
-3. 생성된 `Raidian.exe`, `Raidian-CLI.exe`, 포터블 ZIP을 **실제 Windows에서** 수동 테스트.
-4. 첨부 서체가 있다면 원본 파일과 재배포 허가 확인 후 다시 빌드.
-5. SHA256 체크섬 검토 후 `powershell -File scripts/publish_release.ps1 -Tag v0.1.0 -Prerelease` 명시적 실행.
-6. GitHub Releases 페이지에서 태그, 파일 크기, 자산 업로드가 확인되기 전에는 '릴리스 게시 완료'라고 말하지 않음.
-
-## 5. 오픈소스 관리
-
-- MIT 라이선스와 기여/보안 정책 구비.
-- 라이선스가 확인되지 않은 커스텀 폰트는 커밋하지 않음.
-- README와 SVG에는 외부 사용자 추적 코드를 넣지 않음.
-- 워크플로 전체 주석 처리 상태 유지.
-- 향후 실제 Windows 테스트에서 발생한 오류 및 포터블 용량을 이 문서에 추가할 것.
-
-
-## 6. 추가 검증 · 릴리스 무결성 강화
-
-- `tests/test_release_validation.py`: **합성된 PE 파일**을 대상으로 정상 출처, 체크섬 위·변조, ZIP 파일 누락, SHA 불일치, 태그 형식 오류를 테스트합니다. **실제 Windows EXE 테스트가 아닙니다.**
-- `tests/test_ui.py`: Git 백그라운드 작업 도중 저장소 경로 변경 방지를 가상 디스플레이에서 테스트합니다.
-- 테스트는 총 **25건 통과** (`xvfb-run` GUI 포함). 화면 없는 환경에서는 GUI 테스트 1건이 건너뛰어집니다.
-- 빌드 스크립트가 `BUILD-INFO.json`과 개별 Windows EXE/ZIP SHA-256 목록을 만들고, `scripts.validate_release`가 이를 교차 검증하도록 강화했습니다.
-- 게시 스크립트는 `-WindowsQaPassed` 스위치가 없으면 멈추고, `BUILD-INFO.json` SHA가 현재 `main`과 같을 때만 진행하며, 기존 릴리스를 덮어쓰지 않습니다.
-- **잔여 한계:** 2026-10-25 환경에는 Wine, Windows CPython, MinGW 툴체인, GitHub Release 자산 게시 도구가 없었습니다. 따라서 실제 Windows 바이너리 컴파일/실행/Release 업로드는 **미실시**입니다.
+**실제 Windows 바이너리 배포 완료라고 주장하지 않습니다.**
