@@ -1,28 +1,13 @@
-# Contributing to Raidian 🍓
+# 🍓 함께 만드는 Raidian
 
-작은 PR, 명확한 이유, 안전한 Git 이력. 귀여운 화면도 좋지만 **읽을 수 있는 코드와 설명 가능한 동작**을 우선합니다.
+환영합니다! 주 기능은 조용하고 예측 가능한 Git 인터페이스예요.
 
-## 준비
+1. Issue에서 문제와 사용자 관점의 재현 방법을 적어 주세요.
+2. 새 브랜치는 가능하면 `chatgpt-extrahigh/작업/세부사항`처럼 작은 단위로 나눕니다.
+3. `npm test && npm run check`로 Node.js 기본 테스트를 실행하세요.
+4. 커밋은 `feat: 한글 메시지`, `fix: 오류 설명 정리` 등 **영어 접두어 + 한국어 본문**을 사용합니다. 작은 변경은 작은 커밋으로 남겨 주세요.
+5. GitHub PR을 만들고 검토 후 merge commit(no-ff)으로 병합하세요.
 
-1. 이슈에서 재현 방법과 기대 동작을 정리합니다.
-2. 새로운 브랜치에서 작업합니다. AI 에이전트 브랜치는 `chatgpt-extrahigh/<feature>/<detail>` 규칙을 따릅니다.
-3. **초마이크로 커밋**으로 분리합니다. 커밋 문구는 `fix: 한글 파일명 파싱 수정`처럼 영문 Conventional Commit 접두어와 한글 메시지를 씁니다.
-4. 원격에 매 커밋 푸시하고 PR에서 테스트 결과 및 사용성 변화를 설명합니다.
-5. PR을 GitHub의 `merge` 방식으로 합쳐 개별 커밋과 merge commit을 유지합니다.
+Python/Tkinter 코드는 더 이상 메인 앱 코드가 아닙니다. Electron renderer는 Node 권한 없이 작동해야 하며 임의 셸 실행 기능을 도입하지 않습니다. 번들에 포함되는 폰트의 권리 및 별도 배포 조건을 존중하세요.
 
-## 테스트
-
-```sh
-python -m unittest discover -s tests -v
-python -m compileall -q raidian scripts
-```
-
-- Python 표준 라이브러리를 우선합니다. 실제 Git 레포를 이용하는 단위/통합 테스트를 작성하고 네트워크 접근이 필요한 테스트는 분리합니다.
-- CLI/JSON/MCP는 공통 `raidian/core.py`를 우회하지 않아야 합니다.
-- 화면 레이블·키보드 경로·명시적인 사용자 확인을 놓치지 마세요.
-- Git Bash 출력을 정확히 해석하고, `shell=True` 또는 자동 `--force`를 도입하지 마세요.
-- 외부 폰트를 올릴 때는 별도의 재배포 허가 증거와 라이선스를 제출합니다.
-
-## 빌드 및 릴리스
-
-Actions는 의도적으로 주석만 있습니다. Windows 실행 검증 후 `scripts/build_windows.ps1`로 포터블 ZIP을 만들고 [릴리스 가이드](docs/RELEASING.md)를 따릅니다. 운영체제별 바이너리를 임의로 '정상 빌드'라고 표기하지 마세요.
+워크플로는 요청에 따라 완전히 주석 처리되어 있으며, 자동 CI를 활성화하려면 프로젝트 유지관리자와 먼저 협의해야 합니다.
