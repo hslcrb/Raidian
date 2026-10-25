@@ -11,7 +11,9 @@ Raidian intentionally keeps GitHub Actions **fully commented out**. Publishing i
 - [ ] GUI manually opened on **real Windows** and text including Hangul verified.
 - [ ] CLI/MCP smoke tests and read-only/confirmation behaviors validated.
 - [ ] Included fonts independently checked for embedding/redistribution permission.
-- [ ] SHA256SUMS matches artifacts and is included in release assets.
+- [ ] `BUILD-INFO.json` records exact reviewed `main` SHA and Windows build tool.
+- [ ] `python -m scripts.validate_release` passes (both EXEs, ZIP, SHA256SUMS, source SHA).
+- [ ] SHA256SUMS matches all artifacts and is included in release assets.
 - [ ] LICENSE and README-PORTABLE.txt included in ZIP.
 - [ ] Release notes reviewed for accuracy; experimental features/limitations disclosed.
 - [ ] Tag points at the reviewed `main` commit.
@@ -22,10 +24,10 @@ Raidian intentionally keeps GitHub Actions **fully commented out**. Publishing i
 git switch main
 git pull --ff-only origin main
 powershell -ExecutionPolicy Bypass -File scripts/build_windows.ps1
-powershell -ExecutionPolicy Bypass -File scripts/publish_release.ps1 -Tag v0.1.0 -Prerelease
+powershell -ExecutionPolicy Bypass -File scripts/publish_release.ps1 -Tag v0.1.0 -Prerelease -WindowsQaPassed
 ```
 
-The publisher checks auth, zip contents and the presence of checksums. It uses `gh release create` or `gh release upload` (no `--clobber`), and publishes **only when explicitly invoked**. Verify on <https://github.com/hslcrb/Raidian/releases>.
+The publisher checks auth, clean `main` status, Git SHA provenance, ZIP, x64 PE headers, the checksum values and an explicit `-WindowsQaPassed` human attestation. It uses `gh release create` with `--target <exact built SHA>` and **refuses an existing release** to prevent silent overwrite. It uploads both EXEs, the portable ZIP, checksum manifest and build metadata. `-WindowsQaPassed` is a maintainer assertion, **not automatic proof** that GUI QA happened. Verify on <https://github.com/hslcrb/Raidian/releases>.
 
 ## Supported public statements
 
