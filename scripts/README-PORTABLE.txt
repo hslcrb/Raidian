@@ -12,3 +12,6 @@ GitHub PR 연동은 gh CLI를 별도 설치 및 로그인해야 작동합니다.
 이 파일을 받은 출처와 SHA256SUMS.txt 체크섬을 검증하세요.
 
 MIT License. © Raidian contributors.
+
+BUILD-INFO.json에는 이 바이너리 제작에 사용한 Git 커밋과 Windows 빌드 도구가 기록됩니다.
+SHA256SUMS.txt로 실행 파일과 ZIP의 체크섬을 확인하세요.
