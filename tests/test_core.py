@@ -117,7 +117,7 @@ class GitFixtures(unittest.TestCase):
         good = writer.handle({"id": 4, "method": "tools/call", "params": {
             "name": "git_commit", "arguments": {"confirm": True}}})
         self.assertFalse(good["result"]["isError"])
-        self.assertIn("feat: 새 파일 추가", good["result"]["structuredContent"]["data"])
+        self.assertIn("docs: 문서 업데이트", good["result"]["structuredContent"]["data"])
 
     def test_mcp_json_rpc_init(self) -> None:
         response = Server(self.repo).handle({"jsonrpc": "2.0", "id": 2,

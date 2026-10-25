@@ -13,7 +13,9 @@ from typing import Any
 from . import __version__
 from .core import GitError, Repository
 
-PROTOCOLS = ("2024-11-05", "2025-03-26", "2025-06-18")
+LEGACY_PROTOCOLS = ("2024-11-05", "2025-03-26", "2025-06-18", "2025-11-25")
+MODERN_PROTOCOL = "2026-07-28"
+PROTOCOLS = LEGACY_PROTOCOLS + (MODERN_PROTOCOL,)
 
 
 def _schema(properties: dict[str, Any] | None = None, required: list[str] | None = None) -> dict[str, Any]:
@@ -112,13 +114,31 @@ class Server:
         try:
             method = message.get("method")
             params = message.get("params") or {}
-            if method == "initialize":
-                wanted = params.get("protocolVersion", PROTOCOLS[-1])
-                data = {"protocolVersion": wanted if wanted in PROTOCOLS else PROTOCOLS[-1],
+            if not isinstance(params, dict):
+                raise ValueError("params must be an object")
+            meta = params.get("_meta", {})
+            if not isinstance(meta, dict):
+                raise ValueError("params._meta must be an object")
+            version = meta.get("io.modelcontextprotocol/protocolVersion")
+            modern = version is not None or method == "server/discover"
+            if modern and version != MODERN_PROTOCOL:
+                return {"jsonrpc": "2.0", "id": request_id,
+                        "error": {"code": -32022, "message": "Unsupported protocol version",
+                                  "data": {"supported": list(PROTOCOLS), "requested": version}}}
+            if method == "server/discover":
+                data = {"resultType": "complete", "supportedVersions": list(PROTOCOLS),
+                        "capabilities": {"tools": {"listChanged": False}},
+                        "_meta": {"io.modelcontextprotocol/serverInfo": {
+                            "name": "raidian", "version": __version__}},
+                        "instructions": "Git tools for one local repository; writes require --allow-write and confirm:true.",
+                        "ttlMs": 60000, "cacheScope": "private"}
+            elif method == "initialize":
+                wanted = params.get("protocolVersion", LEGACY_PROTOCOLS[-1])
+                data = {"protocolVersion": wanted if wanted in LEGACY_PROTOCOLS else LEGACY_PROTOCOLS[-1],
                         "capabilities": {"tools": {"listChanged": False}},
                         "serverInfo": {"name": "raidian", "version": __version__},
                         "instructions": "Read-only by default. Use --allow-write and confirm:true to modify Git history."}
-            elif method == "ping":
+            elif method == "ping" and not modern:
                 data = {}
             elif method == "tools/list":
                 data = {"tools": catalog(self.allow_write)}
@@ -138,6 +158,10 @@ class Server:
             else:
                 return {"jsonrpc": "2.0", "id": request_id,
                         "error": {"code": -32601, "message": f"Method not found: {method}"}}
+            if modern and method != "server/discover":
+                data["resultType"] = "complete"
+                data["_meta"] = {"io.modelcontextprotocol/serverInfo": {
+                    "name": "raidian", "version": __version__}}
             return {"jsonrpc": "2.0", "id": request_id, "result": data}
         except (TypeError, AttributeError, KeyError, ValueError) as error:
             return {"jsonrpc": "2.0", "id": request_id,

@@ -143,10 +143,10 @@ class Repository:
         codes = [f["state"] for f in files]
         if all("D" in code for code in codes):
             return "chore: 삭제된 파일 정리"
+        if all(Path(f["path"]).suffix.lower() in {".md", ".rst"} for f in files):
+            return "docs: 문서 업데이트"
         if all(code == "??" or "A" in code for code in codes):
             return "feat: 새 파일 추가"
-        if all(Path(f["path"]).suffix.lower() in {".md", ".rst", ".txt"} for f in files):
-            return "docs: 문서 업데이트"
         if all("R" in code for code in codes):
             return "refactor: 파일 구조 정리"
         return "chore: 변경 사항 업데이트"

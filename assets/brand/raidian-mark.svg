@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-labelledby="title desc">
+  <title id="title">Raidian 루비 마크</title>
+  <desc id="desc">장밋빛 라운드 사각형 안의 얼굴이 있는 Git 브랜치 캐릭터</desc>
+  <rect width="256" height="256" rx="74" fill="#551128"/>
+  <rect x="18" y="18" width="220" height="220" rx="62" fill="#FCECEF"/>
+  <path d="M89 75v98c0 17 12 29 29 29h44" fill="none" stroke="#A72146" stroke-width="13" stroke-linecap="round"/>
+  <path d="M89 129c44 0 76-27 76-72" fill="none" stroke="#A72146" stroke-width="13" stroke-linecap="round"/>
+  <g fill="#C42B54" stroke="white" stroke-width="5"><circle cx="89" cy="75" r="17"/><circle cx="165" cy="57" r="17"/><circle cx="162" cy="202" r="17"/></g>
+  <g fill="#551128"><circle cx="114" cy="131" r="5"/><circle cx="148" cy="131" r="5"/></g>
+  <path d="M120 148q11 12 22 0" fill="none" stroke="#551128" stroke-width="3.5" stroke-linecap="round"/>
+  <ellipse cx="104" cy="145" rx="9" ry="5" fill="#ECA3BA"/><ellipse cx="160" cy="145" rx="9" ry="5" fill="#ECA3BA"/>
+</svg>

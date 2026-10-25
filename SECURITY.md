@@ -1,3 +1,18 @@
-# Security policy
+# Security policy · 안전한 이력을 좋아해요 ♡
 
-Report vulnerabilities privately via the repository's GitHub security advisory feature when available, rather than opening a public exploit issue. Raidian invokes installed `git`/`gh` with `shell=False`; read-only MCP is the default and Git history rewriting is omitted. Git and GitHub CLI credentials should be managed by their official helpers. Never post credentials in logs, screenshots or issues. The app is experimental; use test repositories when evaluating new release builds.
+## Responsible disclosure
+
+GitHub의 **비공개 보안 권고(Security Advisory)**가 사용 가능한 경우 그것을 통해 제보하세요. 악용 가능한 PoC, 토큰 또는 취약한 사용자의 경로를 공개 이슈에 올리지 마세요. 현재 명시적 지원 버전은 아직 설정 중이며, 초기 릴리스는 실험적입니다.
+
+## Architecture trust boundaries
+
+- Git/`gh` 호출은 인자 배열과 `shell=False`를 사용합니다. 임의 셸 실행 명령은 MCP로 노출하지 않습니다.
+- Git 자격 증명은 Git Credential Manager·`gh`가 관리합니다. Raidian은 비밀번호를 저장하거나 프롬프트에 노출하지 않습니다.
+- MCP는 시작할 때 선택한 Git 저장소에서만 작동하고 읽기 전용이 기본입니다. `--allow-write`와 `confirm:true`는 사용자 승인을 보증하는 것이 **아니며**, 신뢰하는 클라이언트에서만 사용할 것을 권고합니다.
+- 변경 파일 내용을 모두 커밋하는 `commit`을 쓰기 전에 상태를 살펴보세요. `.env`, API 키, 비밀 파일은 `.gitignore`로 제외하세요.
+- 외부에서 받은 `.exe`는 GitHub Release 출처와 SHA256을 확인하세요. 미서명 초기 바이너리에는 평판 경고가 나올 수 있습니다.
+- 악의적인 저장소와 로컬 Git 설정은 훅 등을 통해 임의 동작을 야기할 수 있습니다. 신뢰하지 않는 프로젝트를 열기 전에 OS 격리 환경을 활용하세요.
+
+## Non-goals
+
+공개 브랜치 강제 덮어쓰기, 대화형 이력 삭제, 임의 셸 도구, 자동 충돌 해소는 제공하지 않습니다. 추가된 기능에 취약점이 발견되면 재현 방법과 예상 영향 범위를 비공개로 공유해 주세요.
