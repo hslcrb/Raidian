@@ -1,7 +1,7 @@
 # 🚀 릴리스 매뉴얼
 
 1. `main`에 PR이 merge commit(no-ff)으로 병합됐는지 확인.
-2. Windows x64에서 Node/Git/gh 준비, `assets/fonts/ChosunGu.TTF` 원본 배치.
+2. Windows x64에서 Node/Git/gh 준비, `npm run font:verify`로 저장소 내 조선굴림체 에셋 검사.
 3. `npm install`, `npm test`, `npm run build:win`, `npm run verify:win` 통과.
 4. Windows에서 폰트·한글·브랜치·병합·CLI·MCP 실사용 QA.
 5. `scripts/publish-release.ps1 -WindowsQaPassed` 실행.

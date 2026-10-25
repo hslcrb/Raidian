@@ -4,7 +4,7 @@
 
 - Python/Tkinter 의존성을 제거하고 Electron + Node.js + Web UI로 전면 리팩토링했습니다.
 - 루비(Ruby) SVG 브랜딩과 버건디/체리 레드/블러시 팔레트를 유지하면서 반응형·접근성 개선.
-- 조선굴림체(ChosunGu) TTF를 우선 로드하도록 `@font-face` 구성.
+- 조선굴림체(ChosunGu) WOFF2를 `assets/fonts`에 직접 포함해 `@font-face`로 로드하며, 첨부 TTF 원본은 무손실 gzip으로 같은 폴더에 보존.
 - 공통 Git 엔진의 UTF-8 우선/CP949 폴백, 한국어 자동 커밋, `--no-ff` 병합, 히스토리 복사·되돌리기, 여러 원격을 유지.
 - 단일 Electron EXE에서 `--cli`와 `--mcp` 접근 가능하도록 구성.
 - MCP 읽기 전용 기본값, allowlist, 명시적 확인·안전한 contextBridge 도입.

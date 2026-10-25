@@ -19,7 +19,7 @@
 **준비:** Node.js 22 이상, Git for Windows(또는 Git), 그리고 GitHub PR을 사용할 때만 GitHub CLI(`gh`). Electron 설치 없이 **완성된 EXE를 실행하면** Node 설치가 필요하지 않아요. Git과 선택적인 gh는 별도로 필요합니다.
 
 ```powershell
-git clone --recurse-submodules https://github.com/hslcrb/Raidian.git
+git clone https://github.com/hslcrb/Raidian.git
 cd Raidian
 npm install
 npm start
@@ -55,7 +55,14 @@ npm start
 
 ## 🫧 조선굴림체 · 폰트 이야기
 
-레이디안 UI는 첨부해 준 **조선굴림체(ChosunGu)**를 우선으로 사용해요. 앱 빌드 시 **사용자가 제공한 파일과 Git SHA가 동일한 조선굴림체 원본**을 확인하고, 없으면 고정된 GitHub 폰트 서브모듈에서 복사하거나 동일한 공개 GitHub 미러에서 다운로드한 뒤 `@font-face`로 번들에 포함합니다 (`npm run font:install`). 한글 경로·제목·이력 메시지도 잘 표시되도록 UTF-8과 CP949 폴백을 사용합니다. 파일이 없는 체크아웃은 Windows 맑은 고딕으로 대체됩니다.
+레이디안 UI는 첨부해 준 **조선굴림체(ChosunGu)**를 사용해요. 이제 서브모듈도 별도 폰트 다운로드도 없어요. `assets/fonts/`에 웹 화면이 바로 읽는 `ChosunGu.woff2`와, **첨부 원본 TTF를 한 글자도 바꾸지 않고 보존한 무손실 파일** `ChosunGu.TTF.gz`를 직접 넣었습니다. ✨
+
+```powershell
+npm run font:verify   # 저장소에 포함된 파일과 원본 SHA 검증
+npm run font:restore  # 원본 ChosunGu.TTF가 필요하다면 같은 폴더에 복원
+```
+
+폰트 에셋은 GitHub 저장소에 함께 들어 있으므로 외부 폰트 저장소나 네트워크에 의존하지 않습니다. Electron 배포판에는 용량이 작은 WOFF2를 포함하며, 한글 경로·커밋 메시지는 기존의 UTF-8/CP949 폴백을 유지합니다.
 
 폰트 제작사와 원문 배포 조건은 [폰트 안내](assets/fonts/README.md)를 읽어 주세요. **프로그램 소스 MIT 라이선스와 폰트의 권리는 서로 달라요.**
 
