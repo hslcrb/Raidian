@@ -94,7 +94,7 @@ class PackageContract(unittest.TestCase):
     def test_documentation_links_exist(self) -> None:
         for file in ("docs/USER_GUIDE.md", "docs/AGENTS.md", "docs/ARCHITECTURE.md",
                      "docs/BRAND.md", "docs/BUILD_WINDOWS.md", "docs/RELEASING.md",
-                     "docs/RELEASE_NOTES_v0.1.0.md", "CHANGELOG.md",
+                     "docs/RELEASE_NOTES_v0.1.0.md", "docs/VALIDATION.md", "CHANGELOG.md",
                      "scripts/build_windows.ps1", "scripts/publish_release.ps1"):
             self.assertTrue((ROOT / file).is_file(), file)
 
