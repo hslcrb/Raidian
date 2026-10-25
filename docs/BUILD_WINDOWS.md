@@ -33,7 +33,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\build_windows.ps1
 powershell -ExecutionPolicy Bypass -File .\scripts\build_windows.ps1 -Builder Nuitka-MingGW
 ```
 
-Script does: create an isolated environment; install its pinned-major tools; run unit tests; compile Python; generate an icon; build GUI and console; validate PE x64 headers; smoke-test CLI/doctor/agent-guide; zip binaries with README and LICENSE; generate SHA256SUMS.
+Script does: create an isolated environment; install its pinned-major tools; run unit tests; compile Python; generate an icon; build GUI and console; validate PE x64 headers; smoke-test CLI/doctor/agent-guide; write a Git SHA-linked BUILD-INFO.json; zip binaries with README and LICENSE; generate SHA256SUMS; verify the archive, binaries and source provenance.
 
 Expected outputs **only after a successful build**:
 
@@ -43,6 +43,7 @@ dist/
   Raidian-CLI.exe                   # CLI + MCP (subcommand: mcp)
   Raidian-v0.1.0-windows-x64-portable.zip
   SHA256SUMS.txt
+  BUILD-INFO.json                   # verified source Git SHA and build tool
 ```
 
 The optional embedded fonts must be placed in `assets/fonts/` with an appropriate redistribution license before compiling; without them Windows system fonts are used. Source SVG icons do not require proprietary typefaces.
@@ -57,17 +58,18 @@ The optional embedded fonts must be placed in `assets/fonts/` with an appropriat
 6. Test default no-ff merge and no history rewrite on disposable branches.
 7. Confirm MCP JSON-RPC line-delimited stdout is machine-readable, does not print prompts to stdout, and the default mode refuses writes.
 8. Check `git.exe` is actually present on target Windows, either in PATH or via user installation. Python bundle alone does not include Git.
-9. Check `.zip` contains the TWO EXEs, `LICENSE`, `README-PORTABLE.txt`. The ZIP itself is **not** a signed installer.
+9. Check `.zip` contains BOTH EXEs, `LICENSE`, `README-PORTABLE.txt` and `BUILD-INFO.json`. The ZIP itself is **not** a signed installer.
+10. Check `python -m scripts.validate_release --directory dist --tag v0.1.0 --source-commit (git rev-parse HEAD)` passes (PowerShell). This checks manifest, SHA-256 of individual EXEs and ZIP, Windows AMD64 PE headers, ZIP member hashes and exact source revision. It **does not prove actual execution**.
 
 **DO NOT claim the release is validated merely because `MZ`/`PE` headers are present.** `verify_pe.py` only checks format and x64 CPU type; GUI and Git must be tested on Windows before publication.
 
 ## Publishing
 
 ```powershell
-powershell -File .\scripts\publish_release.ps1 -Tag v0.1.0 -Prerelease
+powershell -File .\scripts\publish_release.ps1 -Tag v0.1.0 -Prerelease -WindowsQaPassed
 ```
 
-The publish script is never invoked automatically. It requires an authenticated `gh`, the verified ZIP and checksums, and uploads to the intended repository. See [RELEASING.md](RELEASING.md). Existing same-name release assets are **not** overwritten automatically.
+The publish script is never invoked automatically. It requires an authenticated `gh`, an explicit `-WindowsQaPassed` declaration **after real Windows manual tests**, the five verified release artifacts (both EXEs, ZIP, checksum manifest, BUILD-INFO.json), and the same clean `main` SHA used at build time. It never overwrites an existing release. See [RELEASING.md](RELEASING.md). Existing same-name release assets are **not** overwritten automatically.
 
 ## Troubleshooting
 

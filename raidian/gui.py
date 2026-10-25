@@ -282,11 +282,16 @@ class Workbench:
             self.root.bind(key, lambda _event, cb=action: cb())
 
     def set_repo(self, path: str) -> None:
+        if self.busy:
+            raise GitError("진행 중인 Git 작업이 끝난 뒤 저장소를 변경할 수 있습니다.")
         self.repo = Repository(path)
         self.repo_text.set(str(self.repo.path))
         self.refresh()
 
     def open_repo(self) -> None:
+        if self.busy:
+            self.status_text.set("Git 작업 진행 중 · 완료 후 저장소를 열어주세요.")
+            return
         selected = filedialog.askdirectory(title="Git 저장소 폴더 선택")
         if selected:
             try:
@@ -295,6 +300,9 @@ class Workbench:
                 messagebox.showerror("저장소를 열 수 없습니다", str(error), parent=self.root)
 
     def init_repo(self) -> None:
+        if self.busy:
+            self.status_text.set("Git 작업 진행 중 · 완료 후 새 저장소를 시작하세요.")
+            return
         selected = filedialog.askdirectory(title="새 Git 저장소 폴더 선택")
         if selected and messagebox.askyesno("저장소 시작", f"이 폴더에 Git을 시작할까요?\n{selected}", parent=self.root):
             try:
@@ -321,7 +329,7 @@ class Workbench:
         for commit in snapshot["history"]:
             self.log_tree.insert("", "end", iid=commit["sha"],
                                  values=(commit["sha"][:8], commit["date"], commit["message"]))
-        self.status_text.set("최신 상태 · 항목 선택 시 작업 힌트를 볼 수 있습니다. · AI: raidian agent-guide --json")
+        self.status_text.set("최신 상태 · 항목 선택 시 작업 힌트를 볼 수 있습니다. · AI: raidian --json agent-guide")
 
     def _selection_hint(self) -> None:
         if self.log_tree.selection():
