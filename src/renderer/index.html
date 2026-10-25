@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="theme-color" content="#551128">
+<title>Raidian · 작은 Git 작업실</title>
+<link rel="stylesheet" href="./style.css">
+</head><body>
+<a class="skip" href="#workspace">작업 영역으로 바로 가기</a>
+<div class="app">
+<header class="topbar">
+  <div class="identity">
+    <img class="ruby" src="../../assets/brand/raidian-mark.svg" alt="웃는 Git 브랜치 캐릭터 루비" width="52" height="52">
+    <div><h1>Raidian<span class="flower" aria-hidden="true">✳</span></h1><p>작은 Git 작업실 · 명료하게, 안전하게, 함께</p></div>
+  </div>
+  <div class="header-right"><span class="tiny-heart" aria-hidden="true">♥</span> GIT / GH / AGENTS <span class="version">v0.2</span></div>
+</header>
+<main id="workspace" class="workspace">
+  <section class="repo-toolbar" aria-label="저장소 선택">
+    <div class="repo-info"><span class="eyebrow">MY REPOSITORY</span><span id="repo-path" class="repo-path" data-testid="repository-path" title="현재 Git 저장소">아직 저장소가 없어요</span></div>
+    <div class="button-set"><button id="open-repo" data-testid="open-repo" type="button" class="btn btn-light" title="Ctrl+O · 기존 Git 저장소 선택">📁 폴더 열기</button><button id="init-repo" data-testid="init-repo" type="button" class="btn btn-quiet">＋ 새 저장소</button><button id="refresh" data-testid="refresh" type="button" class="btn btn-quiet" title="F5 · 새로고침">↻ 새로고침</button></div>
+  </section>
+  <section class="hero-card" aria-label="Git 상태 안내">
+    <div class="hero-text"><span class="eyebrow">BRANCH IN BLOOM <span aria-hidden="true">✽</span></span><h2 id="branch-name" data-testid="active-branch">저장소를 열어 볼까요?</h2><p>커밋은 로컬에 기록하고, 푸시는 원격에 전송해요. 병합은 항상 <strong>no-ff</strong> 🌱</p></div>
+    <div class="branch-art" aria-hidden="true"><span>◦</span><svg viewBox="0 0 144 126" fill="none"><path d="M30 20v56q0 24 25 24h58" stroke="currentColor" stroke-width="9" stroke-linecap="round"/><path d="M30 57c30 0 38-35 68-35" stroke="currentColor" stroke-width="9" stroke-linecap="round"/><circle cx="30" cy="20" r="13" fill="#F9D8E2"/><circle cx="98" cy="22" r="13" fill="#F9D8E2"/><circle cx="113" cy="100" r="13" fill="#F9D8E2"/></svg></div>
+  </section>
+  <nav class="actions" aria-label="빠른 Git 작업">
+    <button id="push" data-testid="push" class="btn btn-primary" type="button" title="Alt+P">↑ 푸시</button>
+    <button id="fetch" data-testid="fetch" class="btn btn-blush" type="button">↓ 가져오기</button>
+    <button id="pull" data-testid="pull" class="btn btn-quiet" type="button">↻ 풀</button>
+    <button id="branch-create" data-testid="branch-create" class="btn btn-quiet" type="button" title="Alt+B">＋ 하위 브랜치</button>
+    <button id="branch-switch" data-testid="branch-switch" class="btn btn-quiet" type="button">브랜치 전환</button>
+    <button id="merge" data-testid="merge" class="btn btn-quiet" type="button">병합 · no-ff</button>
+    <button id="remotes" data-testid="remotes" class="btn btn-quiet" type="button">원격 관리</button>
+    <button id="github" data-testid="github" class="btn btn-quiet" type="button">GitHub / PR</button>
+  </nav>
+  <div class="content-grid">
+    <section class="card files" aria-labelledby="file-title"><div class="card-header"><div><div class="eyebrow">WORKING TREE</div><h3 id="file-title">변경 파일 <span class="count" id="file-count">0</span></h3><p>커밋에 포함될 파일을 먼저 확인해요.</p></div><span class="icon-chip" aria-hidden="true">✎</span></div>
+      <div class="table-wrap"><table><thead><tr><th scope="col">상태</th><th scope="col">파일</th></tr></thead><tbody id="file-list" data-testid="file-list"><tr><td colspan="2" class="empty">저장소를 열면 파일이 보여요.</td></tr></tbody></table></div>
+    </section>
+    <section class="card history" aria-labelledby="history-title"><div class="card-header"><div><div class="eyebrow">TIME MACHINE</div><h3 id="history-title">커밋 기록</h3><p>지난 기록도 차근차근 살펴봐요.</p></div><span class="icon-chip" aria-hidden="true">◷</span></div>
+      <ul id="history-list" class="history-list" data-testid="history-list"><li class="empty">아직 커밋 기록이 없어요.</li></ul>
+      <div class="history-operations"><span id="selected-sha" class="selected-hint">커밋을 선택해 주세요.</span><button id="copy-commit" class="btn btn-small btn-blush" type="button" disabled>변경 복사</button><button id="revert" class="btn btn-small btn-quiet" type="button" disabled>커밋 되돌리기</button><button id="copy-sha" class="btn btn-small btn-quiet" type="button" disabled title="SHA 복사">SHA 복사</button></div>
+    </section>
+  </div>
+  <section class="commit-card" aria-labelledby="commit-title"><div><span class="eyebrow">SAVE YOUR WORK ♡</span><h3 id="commit-title">변경사항 커밋하기</h3><p>메시지를 비워두면 변경 파일을 보고 알아서 한국어 메시지를 정해요.</p></div><form id="commit-form"><label for="commit-message" class="visually-hidden">커밋 메시지</label><input id="commit-message" data-testid="commit-message" maxlength="500" autocomplete="off" placeholder="예: feat: 로그인 화면 추가 · 비우면 자동"/><div class="button-set"><button id="commit-only" class="btn btn-light" type="submit">커밋하기</button><button id="commit-push" data-testid="commit-push" class="btn btn-primary" type="button" title="Ctrl+Shift+Enter">커밋하고 푸시 ↑</button></div></form></section>
+</main>
+<footer class="statusbar" role="status" aria-live="polite"><span class="dot" aria-hidden="true"></span><span id="status">안녕하세요! 루비와 함께 Git을 시작해요. 🍒</span><span id="busy-indicator" hidden>작업 중…</span><span class="keyboard">F5 새로고침 · Ctrl+Enter 커밋</span></footer>
+</div>
+<dialog id="action-dialog" aria-labelledby="dialog-title" data-testid="action-dialog"><div class="dialog-head"><span class="eyebrow">RAIDIAN · RUBY</span><button type="button" id="dialog-close" class="icon-close" aria-label="닫기">✕</button></div><h2 id="dialog-title">작업</h2><p id="dialog-description"></p><form id="dialog-form"><div id="dialog-fields"></div><div class="dialog-actions"><button type="button" id="dialog-cancel" class="btn btn-light">취소</button><button type="submit" id="dialog-submit" class="btn btn-primary">계속</button></div></form></dialog>
+<script defer src="./app.js"></script>
+</body></html>
