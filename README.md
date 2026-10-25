@@ -152,7 +152,7 @@ python -m compileall -q raidian scripts
 ```
 
 - [사용자 사용 설명서](docs/USER_GUIDE.md) · [프로그램 구조](docs/ARCHITECTURE.md) · [에이전트 계약](docs/AGENTS.md)
-- [Windows 빌드](docs/BUILD_WINDOWS.md) · [릴리스 체크리스트](docs/RELEASING.md) · [변경 기록](CHANGELOG.md)
+- [Windows 빌드](docs/BUILD_WINDOWS.md) · [릴리스 체크리스트](docs/RELEASING.md) · [변경 기록](CHANGELOG.md) · [검증 기록](docs/VALIDATION.md)
 - [기여 안내](CONTRIBUTING.md) · [보안 정책](SECURITY.md) · [MIT 라이선스](LICENSE)
 
 Git 문제는 어렵지만, 오류 안내는 어려울 필요가 없다고 믿어요. 작은 PR부터 반갑게 환영합니다. 🌷
