@@ -7,8 +7,13 @@
   "main": "src/electron/main.cjs",
   "license": "MIT",
   "author": "Raidian contributors",
-  "engines": {"node": ">=22"},
-  "bin": {"raidian": "bin/raidian.cjs", "raidian-mcp": "bin/raidian-mcp.cjs"},
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "raidian": "bin/raidian.cjs",
+    "raidian-mcp": "bin/raidian-mcp.cjs"
+  },
   "scripts": {
     "start": "electron .",
     "dev": "electron . --dev",
@@ -19,7 +24,9 @@
     "check": "node --check src/core/git.cjs && node --check src/core/commands.cjs && node --check src/core/cli.cjs && node --check src/mcp/server.cjs && node --check src/electron/main.cjs && node --check src/electron/preload.cjs && node --check src/renderer/app.js",
     "build:win": "electron-builder --win portable zip --x64 --publish never",
     "build:linux": "electron-builder --linux AppImage --x64 --publish never",
-    "verify:win": "node scripts/verify-windows.mjs"
+    "verify:win": "node scripts/verify-windows.mjs",
+    "font:install": "node scripts/install-font.mjs",
+    "prebuild:win": "node scripts/install-font.mjs"
   },
   "devDependencies": {
     "electron": "45.0.0",
@@ -29,10 +36,42 @@
     "appId": "io.github.hslcrb.raidian",
     "productName": "Raidian",
     "asar": true,
-    "directories": {"output": "dist", "buildResources": "assets/brand"},
-    "files": ["src/**/*", "bin/**/*", "assets/brand/**/*", "assets/fonts/**/*", "package.json", "LICENSE"],
-    "extraMetadata": {"main": "src/electron/main.cjs"},
-    "win": {"target": [{"target": "portable", "arch": ["x64"]}, {"target": "zip", "arch": ["x64"]}], "artifactName": "Raidian-${version}-win-${arch}.${ext}", "signAndEditExecutable": false},
-    "portable": {"artifactName": "Raidian-${version}-win-${arch}-portable.${ext}"}
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets/brand"
+    },
+    "files": [
+      "src/**/*",
+      "bin/**/*",
+      "assets/brand/**/*",
+      "assets/fonts/ChosunGu.TTF",
+      "package.json",
+      "LICENSE",
+      "assets/fonts/README.md"
+    ],
+    "extraMetadata": {
+      "main": "src/electron/main.cjs"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "Raidian-${version}-win-${arch}.${ext}",
+      "signAndEditExecutable": false
+    },
+    "portable": {
+      "artifactName": "Raidian-${version}-win-${arch}-portable.${ext}"
+    }
   }
 }
