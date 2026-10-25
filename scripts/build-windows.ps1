@@ -6,7 +6,7 @@ if (-not (Get-Command node -ErrorAction SilentlyContinue)) { throw 'Node.js 22 �
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) { throw 'Git for Windows가 필요합니다.' }
 if (-not (Get-Command npm -ErrorAction SilentlyContinue)) { throw 'npm이 설치되어야 합니다.' }
 Set-Location (Split-Path -Parent $PSScriptRoot)
-# npm run build:win의 prebuild에서 원본 폰트 SHA 검증 및 필요 시 다운로드
+# 앱에 포함된 로컬 폰트 에셋을 prebuild 단계에서 검증합니다 (외부 폰트 다운로드 없음).
 node -e "if (Number(process.versions.node.split('.')[0])<22) process.exit(1)"
 if ($LASTEXITCODE -ne 0) {throw 'Node.js 22 이상이 필요합니다.'}
 npm install --no-audit --no-fund
