@@ -1,28 +1,20 @@
-# Intentionally disabled: EVERY LINE stays commented.
-# This is a reference only. Manual build steps are in scripts/build_windows.ps1.
-# name: Raidian Windows portable build (DISABLED)
+# Disabled on purpose; no workflow events or jobs are active.
+# name: Windows portable
 # on:
 #   workflow_dispatch:
 # jobs:
-#   windows-portable:
+#   package:
 #     runs-on: windows-latest
-#     permissions:
-#       contents: read
 #     steps:
 #       - uses: actions/checkout@v4
-#       - uses: actions/setup-python@v5
+#       - uses: actions/setup-node@v4
 #         with:
-#           python-version: '3.12'
-#       - name: Test and package both executable entrypoints
-#         shell: powershell
-#         run: powershell -ExecutionPolicy Bypass -File scripts/build_windows.ps1
-#       - name: Retain verified archives as job artifacts
-#         uses: actions/upload-artifact@v4
+#           node-version: 24
+#       - run: npm install
+#       - run: npm test
+#       - run: npm run build:win
+#       - run: npm run verify:win
+#       - uses: actions/upload-artifact@v4
 #         with:
-#           name: Raidian-windows-portable
-#           path: |
-#             dist/Raidian.exe
-#             dist/Raidian-CLI.exe
-#             dist/Raidian-v0.1.0-windows-x64-portable.zip
-#             dist/SHA256SUMS.txt
-# This template does NOT activate releases, publish assets, or run automatically.
+#           name: raidian-portable
+#           path: dist/*
