@@ -1,14 +1,15 @@
-__pycache__/
-*.py[cod]
-*.egg-info/
-.venv/
-.venv-raidian-*/
-.pytest_cache/
-.coverage
-build/
+node_modules/
 dist/
-*.spec
-!.github/
+release/
+.cache/
+build/
+*.log
+.env*
 .DS_Store
 Thumbs.db
-*.log
+coverage/
+# Local font staging file; the source repository carries attribution and a font path.
+# Font supplied by the user is not redistributed from this workspace.
+assets/fonts/*.TTF
+assets/fonts/*.ttf
+!assets/fonts/.gitkeep

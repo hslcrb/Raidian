@@ -1,75 +1,58 @@
-# Raidian AI Agent / Computer Use / MCP reference
+# 🤖 AI Agent · CLI · MCP 가이드
 
-> **Principle:** GUI and CLI are first-class, the Git engine is singular, and agent write access is a **privilege**, not a default.
+레이디안은 GUI만 자동 클릭하는 방식보다 **안전하고 구조화된 CLI/MCP**를 우선 제공합니다. Computer Use 에이전트도 `data-testid`, 의미 있는 버튼/레이블, 키보드 동작을 활용할 수 있어요.
 
-## Interfaces
+## CLI 실행
 
-| Interface | Entry point | Designed for |
-| --- | --- | --- |
-| Tkinter GUI | `python -m raidian gui` or `Raidian.exe` | Computer Use and humans, accessible visible actions |
-| CLI | `raidian --repo PATH --json status` | Deterministic tool invocations and logging |
-| Interactive CLI | `raidian shell` | Human-in-the-loop command discovery |
-| MCP stdio | `python -m raidian.mcp --repo PATH` | JSON-RPC tools within ONE selected repository |
-| Portable console | `Raidian-CLI.exe [arguments]`, `Raidian-CLI.exe mcp --repo PATH` | No Python install needed on Windows |
-
-## CLI guidance
-
-1. Begin with `--json doctor` and `--json agent-guide`. Both commands are available without an open repository.
-2. Prefer `--json status` to inspect modifications and the active branch.
-3. For changes, explicitly choose message and target branch. `commit` stages **all** changes by default.
-4. `merge`, `copy-commit`, `revert`, `remote-remove` and `gh-pr-create` require `--yes` as action acknowledgment.
-5. A blank commit message results in a deterministic Korean conventional-commit message. This **does not** summarize diff content via a model.
-6. Output uses UTF-8 JSON with `ensure_ascii=False`; nonzero exit codes signal Git errors. Process timeouts prevent endless hanging in the engine.
-
-Example:
-
-```powershell
-Raidian-CLI.exe --json doctor
-Raidian-CLI.exe --repo 'C:\work\내 프로젝트' --json status
-Raidian-CLI.exe --repo 'C:\work\내 프로젝트' --json log --limit 5
-Raidian-CLI.exe --repo 'C:\work\내 프로젝트' --json branch-child docs readme-refresh
-Raidian-CLI.exe --repo 'C:\work\내 프로젝트' --json merge main --yes
+```bash
+node bin/raidian.cjs --repo /path/to/repository --json status
+node bin/raidian.cjs --repo /path/to/repository log --limit 10
+node bin/raidian.cjs --repo /path/to/repository commit
+node bin/raidian.cjs --repo /path/to/repository merge chatgpt-extrahigh/feature/one --yes
+node bin/raidian.cjs --repo /path/to/repository remote-add backup https://github.com/owner/repo.git
+node bin/raidian.cjs --repo /path/to/repository --json agent-guide
 ```
+
+- 최상위 `--repo`, `--json`은 명령 앞뒤 모두 허용됩니다.
+- CLI의 이력 변경 명령 `merge`, `copy-commit`, `revert`, `remote-remove`, `gh-pr-create`에는 `--yes` 필요.
+- `shell`은 사람이 읽는 대화형 인터페이스, `--json`은 프로그램/LLM 에이전트에게 적합합니다.
+- CLI `doctor`는 Git·gh 경로와 Node/Electron 런타임을 조회합니다.
 
 ## MCP stdio
 
-A line-delimited JSON-RPC server via UTF-8 stdin/stdout; diagnostics go to stderr only. Example client configuration:
-
-```json
-{
-  "mcpServers": {
-    "raidian": {
-      "command": "C:\\Apps\\Raidian\\Raidian-CLI.exe",
-      "args": ["mcp", "--repo", "C:\\work\\내 프로젝트"]
-    }
-  }
-}
+```bash
+# 읽기 전용
+node bin/raidian-mcp.cjs --repo /path/to/repository
+# 제한된 쓰기 도구 사용
+node bin/raidian-mcp.cjs --repo /path/to/repository --allow-write
 ```
 
-- MCP handshake era (`initialize`) supports 2024-11-05 through **2025-11-25**; modern **2026-07-28** stateless era adds `server/discover`, per-request `_meta`, `resultType`, and version mismatch handling. The minimal stdio implementation does not offer optional transport extensions.
-- Both eras share `tools/list` and `tools/call`; only legacy mode supports `ping`. Protocol support follows the server's `PROTOCOLS` list.
-- Without `--allow-write`, mutation tools are not advertised and are rejected if called.
-- With `--allow-write`, each mutating call must contain a literal JSON Boolean `"confirm": true`; strings like `"true"` must not count as approval.
-- **Do not imply that a model's `confirm:true` proves a human approved a write.** Trust boundaries are controlled by the MCP client and launcher. Grant access only to trusted agents, local repositories, and OS-level permissions.
-- This is *not* a general-purpose terminal and cannot arbitrarily run `git` arguments.
+호환 프로토콜: `initialize` = `2025-11-25`, `server/discover` = `2026-07-28`, `tools/list`, `tools/call`, `ping`. JSON-RPC 메시지는 **한 줄에 하나**만 입력하고 서버 응답도 stdout 한 줄 JSON입니다. 진단 오류는 stderr로 보냅니다.
 
-The server is pinned to the repository specified at startup. The `--repo` argument is an OS path, not a URI; do not accept repository path input supplied by untrusted prompts.
+```json
+{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"sample","version":"1"}}}
+{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}
+{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"git_status","arguments":{}}}
+```
 
-## Computer Use conventions
+쓰기 예시 (`--allow-write` 실행 시):
 
-- Locate controls by visible labels (`폴더 열기`, `커밋`, `푸시`, `병합 · no-ff`) and inspect the status bar before subsequent actions.
-- The buttons can be focused by Tab and activated with Enter/Space. Native entry and tree widgets expose standard focus/selection concepts.
-- On narrow windows the controls wrap and change position; do not hard-code screen coordinates.
-- Confirm destructive-sounding operations via the GUI dialog; never automatically dismiss errors and retry merges.
-- Read actual changes before commit. Raidian deliberately does not issue arbitrary LLM prompts, download models, or silently submit repository text to external services.
+```json
+{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"git_commit","arguments":{"message":"docs: 사용 설명서 보완","confirm":true}}}
+```
 
-## Human-readable machine hints
+도구 이름은 `git_status`, `git_log`, `git_branch_child`, `git_merge`, `git_copy_commit`, `git_revert`, `git_remote_add`, `git_gh_prs` 등입니다. `tools/list`가 실제 사용 가능한 도구 목록의 기준입니다. **MCP는 임의 셸 명령 실행/force-push를 지원하지 않으며**, 허용한 단일 저장소로만 접근합니다. `confirm:true`는 호출 인자이며 사람 승인의 증명 수단이 아닙니다. 신뢰할 수 없는 에이전트에는 쓰기 모드를 열지 마세요.
 
-`--json agent-guide` enumerates safe defaults and command examples. The GUI status line similarly explains the state and meaning of history actions. No internet connection is needed for local Git operations.
+## GUI 자동화
 
-## Limits
+| 동작 | 안정적인 셀렉터 |
+|---|---|
+| 저장소 열기 | `[data-testid="open-repo"]` |
+| 저장소 경로 확인 | `[data-testid="repository-path"]` |
+| 커밋 입력 | `[data-testid="commit-message"]` |
+| 커밋 + 푸시 | `[data-testid="commit-push"]` |
+| 새 브랜치 | `[data-testid="branch-create"]` |
+| 이력 | `[data-testid="history-list"]` |
+| 상태 알림 | `#status[role=status]`의 상위 footer |
 
-- MCP is intentionally minimal rather than a complete implementation of all GitHub or Git internals.
-- GitHub PR integration delegates to externally installed `gh` and its authentication.
-- Writing requires explicit trust; not a sandbox, not an OS security boundary.
-- No force-push, arbitrary deletion of published commits, broad filesystem scan, arbitrary shell, or automatically resolved conflicts.
+UI 구조를 직접 조작해 destructive action을 우회하려고 하지 말고 CLI/MCP 쓰기와 확인 절차를 따르세요.

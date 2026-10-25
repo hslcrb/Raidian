@@ -1,20 +1,16 @@
-# Changelog
+# 변경 이력
 
-All notable changes are recorded here in English-prefix/Korean-message commits. The changelog lists implemented sources, **not an assurance of an uploaded release binary**.
+## 0.2.0 — Electron 리팩토링 (2026-10-25)
 
-## [Unreleased]
+- feat: Electron 메인/보안 preload/반응형 웹 UI 도입
+- feat: 순수 Node.js Git 엔진/CLI/MCP 통합
+- feat: no-ff 병합, 자동 한국어 커밋, 계층형 브랜치, 복수 원격, PR 연동 유지
+- feat: 사용자 제공 조선굴림체를 CSS 우선 폰트로 사용하도록 지원
+- security: 비활성화한 Node renderer, 허용 목록 IPC/MCP, 확인 절차
+- test: 한글·Git 이력·MCP·정적 접근성 48개 테스트
+- build: Windows portable/zip electron-builder 설정 및 무결성 검증, 수동 게시 스크립트
+- docs: README·AGENTS·BUILD·BRAND·USER_GUIDE·RELEASING 전면 갱신
 
-- `docs`: 귀여운 루비 마스코트와 SVG 브랜드 배너, 친절한 사용·에이전트·빌드·릴리스 문서.
-- `build`: Windows용 GUI+콘솔 포터블 번들, Nuitka/MinGW 대안, ICO 생성기, x64 PE 형식 점검 및 체크섬 스크립트.
-- `feat`: 2026-07-28 stateless MCP 발견 및 2025-11-25 초기화 호환성 지원.
-- `test`: 콘솔 런처와 포맷 검사에 대한 추가 테스트.
+## 0.1.0 — Python/Tkinter 초기 버전
 
-## [0.1.0] — source implementation, 2026-10-25
-
-- `feat`: Tkinter GUI, Git 공통 엔진 및 한글 디코딩.
-- `feat`: JSON CLI·대화형 셸·읽기 우선 MCP.
-- `feat`: no-ff merge, cherry-pick, revert, 여러 원격, GH PR 조회·생성.
-- `test`: 임시 Git 저장소를 사용하는 통합 테스트.
-- `docs`: MIT 라이선스, 기여 가이드, 보안 방침.
-
-_The `0.1.0` source version exists; the Windows binary release must pass separate validation and publication._
+Python 기반의 첫 번째 GUI, CLI, MCP를 구현했습니다. 이력은 GitHub의 기존 PR #1~#4에서 확인할 수 있습니다. 소스는 0.2.0부터 Electron으로 대체됩니다.

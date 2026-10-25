@@ -1,18 +1,21 @@
-# Security policy · 안전한 이력을 좋아해요 ♡
+# 🛡️ 보안 정책
 
-## Responsible disclosure
+Raidian은 사용자 파일을 직접 변경하는 Git 도구이므로 보수적인 작업 범위가 중요합니다.
 
-GitHub의 **비공개 보안 권고(Security Advisory)**가 사용 가능한 경우 그것을 통해 제보하세요. 악용 가능한 PoC, 토큰 또는 취약한 사용자의 경로를 공개 이슈에 올리지 마세요. 현재 명시적 지원 버전은 아직 설정 중이며, 초기 릴리스는 실험적입니다.
+## 보호 장치
 
-## Architecture trust boundaries
+- Electron renderer에서 Node 통합 비활성화, sandbox 및 contextIsolation 적용
+- preload IPC 허용 목록과 Git 명령 `spawn` 인자 배열 (`shell:false`)
+- GitHub 이외의 무분별한 링크 탐색 금지, 콘텐츠 CSP 적용
+- MCP 읽기 전용 기본값, 쓰기 플래그 + 도구 호출별 `confirm:true` 요구
+- 강제 푸시·임의 명령·과거 커밋 직접 제거 기능 미제공
 
-- Git/`gh` 호출은 인자 배열과 `shell=False`를 사용합니다. 임의 셸 실행 명령은 MCP로 노출하지 않습니다.
-- Git 자격 증명은 Git Credential Manager·`gh`가 관리합니다. Raidian은 비밀번호를 저장하거나 프롬프트에 노출하지 않습니다.
-- MCP는 시작할 때 선택한 Git 저장소에서만 작동하고 읽기 전용이 기본입니다. `--allow-write`와 `confirm:true`는 사용자 승인을 보증하는 것이 **아니며**, 신뢰하는 클라이언트에서만 사용할 것을 권고합니다.
-- 변경 파일 내용을 모두 커밋하는 `commit`을 쓰기 전에 상태를 살펴보세요. `.env`, API 키, 비밀 파일은 `.gitignore`로 제외하세요.
-- 외부에서 받은 `.exe`는 GitHub Release 출처와 SHA256을 확인하세요. 미서명 초기 바이너리에는 평판 경고가 나올 수 있습니다.
-- 악의적인 저장소와 로컬 Git 설정은 훅 등을 통해 임의 동작을 야기할 수 있습니다. 신뢰하지 않는 프로젝트를 열기 전에 OS 격리 환경을 활용하세요.
+이 조치는 모든 공격을 차단한다는 보증은 아닙니다. `--allow-write` 서버는 신뢰된 호출자에게만 노출하세요.
 
-## Non-goals
+## 제보 방법
 
-공개 브랜치 강제 덮어쓰기, 대화형 이력 삭제, 임의 셸 도구, 자동 충돌 해소는 제공하지 않습니다. 추가된 기능에 취약점이 발견되면 재현 방법과 예상 영향 범위를 비공개로 공유해 주세요.
+취약점을 발견하면 공개 Issue에 악용 절차/민감 정보를 쓰지 말고 저장소의 **Security → Report a vulnerability** 기능을 이용하세요. GitHub private vulnerability reporting을 사용할 수 없다면 관리자에게 비공개 방식으로 연락하세요.
+
+## 외부 구성 요소
+
+Windows에 설치된 Git/GitHub CLI 및 Electron/Node 런타임의 업데이트·자격 증명 관리도 중요합니다. 조선굴림체는 소프트웨어의 MIT 라이선스와 별도로 저작권자 이용 조건을 따릅니다.
